@@ -15,8 +15,6 @@ import glob
 
 paths = glob.glob("/home/seobin1027/tasks/new_log_data/data/results/*.csv")
 
-
-
 # 저장 경로 설정
 save_dir = "./tabnet_results"
 os.makedirs(save_dir, exist_ok=True)
@@ -45,12 +43,14 @@ class my_metric(Metric):
 class TabNetPipeline:
     def __init__(self, data_path, scaler=None, save_dir="./tabnet_results", params=None):
         self.data_path = data_path
+        self.msg_name = data_path.split("_")[0]
         self.scaler = scaler
+
         self.save_dir = save_dir
         os.makedirs(save_dir, exist_ok=True)
+
         self.params = params or self.model_params()
         self.model = TabNetClassifier(**self.model_params())
-        self.msg_name = data_path.split("_")[0]
 
         self.best_model_dir = os.path.join(self.save_dir, "best_model")
         os.makedirs(self.best_model_dir, exist_ok=True)
@@ -123,15 +123,49 @@ class TabNetPipeline:
         self.model.fit(**self.train_params(custom_params))
         self.history = self.model.history
 
-    def val_evaluate(self):
+    def val_evaluate(self, save_csv=False):
         preds = self.model.predict(self.X_scaled["val"])
+        probs = self.model.predict_proba(self.X_scaled["val"])[:, 1]
+        
+        metrics = {
+            "msg_name": self.msg_name,
+            "accuracy": accuracy_score(self.y["val"], preds),
+            "precision": precision_score(self.y["val"], preds),
+            "recall": recall_score(self.y["val"], preds),
+            "f1": f1_score(self.y["val"], preds),
+            "roc_auc": roc_auc_score(self.y["val"], probs)
+        }
 
-        print(f"Test Set Metrics - {self.msg_name}")
-        print("Accuracy:", accuracy_score(self.y["val"], preds))
-        print("Recall  :", recall_score(self.y["val"], preds))
-        print("F1 Score:", f1_score(self.y["val"], preds))
+        print(f"[{self.msg_name}] Validation Metrics")
+        for k, v in metrics.items():
+            if k != "msg_name":
+                print(f"{k.capitalize():10}: {v:.4f}")
+
+        print("\nConfusion Matrix:")
         print(confusion_matrix(self.y["val"], preds))
+        print("\nClassification Report:")
         print(classification_report(self.y["val"], preds))
+
+        # CSV 저장
+        if save_csv:
+            results_dir = os.path.join(self.save_dir, "results")
+            os.makedirs(results_dir, exist_ok=True)
+            result_file = os.path.join(results_dir, "val_metrics.csv")
+
+            df = pd.DataFrame([metrics])
+            if os.path.exists(result_file):
+                df_existing = pd.read_csv(result_file)
+                df = pd.concat([df_existing, df], ignore_index=True)
+            df.to_csv(result_file, index=False)
+            print(f"[{self.msg_name}] Metrics saved to {result_file}")
+
+        return metrics
+
+
+    def run(self):
+        self.load_prepare_data()
+        self.train()
+        self.val_evaluate()
 
 
 
@@ -238,3 +272,16 @@ class ResultsVisualizer:
         self.plot_feature_importance()
         self.plot_loss()
         print(f"[{self.msg_name}] 시각화 완료")
+
+
+def train_visualize(data_path, save_dir=save_dir):
+    pipeline = TabNetPipeline(data_path=data_path, scaler=StandardScaler(), save_dir=save_dir)
+    pipeline.load_prepare_data()
+    pipeline.train()
+
+    results = pipeline.val_evaluate(save_csv=True)
+
+    visualizer = ResultsVisualizer(pipeline)
+    visualizer.plot_all()
+
+    return results
