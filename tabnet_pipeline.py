@@ -7,13 +7,15 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from pytorch_tabnet.tab_model import TabNetClassifier
 import torch
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 from pytorch_tabnet.metrics import Metric
 
 import os
 import glob
+import math
 
-paths = glob.glob("/home/seobin1027/tasks/new_log_data/data/results/*.csv")
+paths = sorted(glob.glob("/home/seobin1027/tasks/new_log_data/data/results/*.csv"))
 
 # 저장 경로 설정
 save_dir = "./tabnet_results"
@@ -40,10 +42,15 @@ class my_metric(Metric):
         return recall_score(y_true, y_pred)
 
 
+
+
+
+# TabNet
+
 class TabNetPipeline:
     def __init__(self, data_path, scaler=None, save_dir="./tabnet_results", params=None):
         self.data_path = data_path
-        self.msg_name = data_path.split("_")[0]
+        self.msg_name = os.path.basename(self.data_path).split("_")[0]
         self.scaler = scaler
 
         self.save_dir = save_dir
@@ -81,15 +88,15 @@ class TabNetPipeline:
             "eval_set": [(self.X_scaled["val"], self.y["val"])],
             "eval_name": ["valid"],
             "eval_metric": [my_metric, "logloss"],
-            "max_epochs": 200,
-            "patience": 20,
-            "batch_size": 1024,
-            "virtual_batch_size": 128,
-            "num_workers": 0,
+            "max_epochs": 150,
+            "patience": 10,
+            "batch_size": 2048,
+            "virtual_batch_size": 1024,
+            "num_workers": 6,
             "drop_last": False,    
-            "save_checkpoint": True,
-            "log_path": self.best_model_dir,
-            "weights_name": f"{self.msg_name}_tabnet_best_model"            
+            # "save_checkpoint": True,
+            # "log_path": self.best_model_dir,
+            # "weights_name": f"{self.msg_name}_tabnet_best_model"            
         }
 
         if custom_params:
@@ -123,18 +130,26 @@ class TabNetPipeline:
         self.model.fit(**self.train_params(custom_params))
         self.history = self.model.history
 
+        model_path = os.path.join(self.best_model_dir, f"{self.msg_name}_tabnet_best_model")
+        self.model.save_model(model_path)
+
+
     def val_evaluate(self, save_csv=False):
         preds = self.model.predict(self.X_scaled["val"])
         probs = self.model.predict_proba(self.X_scaled["val"])[:, 1]
+
+        best_epoch = np.argmin(self.history["valid_logloss"]) + 1
         
         metrics = {
             "msg_name": self.msg_name,
-            "accuracy": accuracy_score(self.y["val"], preds),
-            "precision": precision_score(self.y["val"], preds),
-            "recall": recall_score(self.y["val"], preds),
-            "f1": f1_score(self.y["val"], preds),
-            "roc_auc": roc_auc_score(self.y["val"], probs)
+            "accuracy": round(accuracy_score(self.y["val"], preds), 4),
+            "precision": round(precision_score(self.y["val"], preds), 4),
+            "recall": round(recall_score(self.y["val"], preds), 4),
+            "f1": round(f1_score(self.y["val"], preds), 4),
+            "roc_auc": round(roc_auc_score(self.y["val"], probs), 4),
+            "best_epoch": best_epoch
         }
+
 
         print(f"[{self.msg_name}] Validation Metrics")
         for k, v in metrics.items():
@@ -159,13 +174,12 @@ class TabNetPipeline:
             df.to_csv(result_file, index=False)
             print(f"[{self.msg_name}] Metrics saved to {result_file}")
 
-        return metrics
-
-
     def run(self):
         self.load_prepare_data()
         self.train()
         self.val_evaluate()
+
+    
 
 
 
@@ -197,24 +211,67 @@ class ResultsVisualizer:
         os.makedirs(self.loss_dir, exist_ok=True)
 
         self.explain_matrix, self.masks = self.model.explain(self.X_scaled["val"])
+
+
+    def plot_confusion_matrix(self):
+        preds = self.model.predict(self.X_scaled["val"])
+        cm = confusion_matrix(self.y["val"], preds)
+        labels = [0, 1]
+
+        plt.figure(figsize=(6, 5))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=labels, yticklabels=labels)
+        plt.xlabel("Predicted Label")
+        plt.ylabel("True Label")
+        plt.title(f"{self.msg_name} Confusion Matrix")
         
+        cm_dir = os.path.join(self.viz_dir, "confusion_matrix")
+        os.makedirs(cm_dir, exist_ok=True)
+        plt.savefig(os.path.join(cm_dir, f"{self.msg_name}_confusion_matrix.png"))
+        plt.close()
+
+
     def plot_masks(self):
+        import math
 
-        fig, axs = plt.subplots(1, len(self.masks), figsize=(4 * len(self.masks), 8))
+        n_masks = len(self.masks)
 
-        for i in range(len(self.masks)):
-            im = axs[i].imshow(self.masks[i], aspect="auto")
-            axs[i].set_title(f"mask {i}")
-            axs[i].set_xticks(range(len(self.feature_names)))        # 컬럼 위치 지정
-            axs[i].set_xticklabels(self.feature_names, rotation=90)  
-            axs[i].set_xlabel("Features")
-            axs[i].set_ylabel("Samples")
+        # 마스크 수에 따라 열 수 자동 조정 (최대 4)
+        if n_masks <= 3:
+            n_cols = n_masks
+        elif n_masks <= 6:
+            n_cols = 3
+        else:
+            n_cols = 4  # 많은 경우 가로 넓게
 
-        plt.suptitle(f"{self.msg_name}", fontsize=16)  # 타이틀 추가
-        plt.tight_layout(rect=[0, 0.03, 1, 0.95])  # 타이틀 공간 확보
+        n_rows = math.ceil(n_masks / n_cols)
+
+        fig, axs = plt.subplots(n_rows, n_cols, figsize=(n_cols * 6, n_rows * 5), squeeze=False)
+
+        for i in range(n_masks):
+            row, col = divmod(i, n_cols)
+            ax = axs[row][col]
+            mask = self.masks[i]
+
+            if mask is None or np.asarray(mask).ndim != 2:
+                ax.axis("off")
+                continue
+
+            im = ax.imshow(np.asarray(mask), aspect="auto")
+            ax.set_title(f"mask {i}")
+            ax.set_xticks(range(len(self.feature_names)))
+            ax.set_xticklabels(self.feature_names, rotation=90)
+            ax.set_xlabel("Features")
+            ax.set_ylabel("Samples")
+
+        for j in range(n_masks, n_rows * n_cols):
+            row, col = divmod(j, n_cols)
+            axs[row][col].axis("off")
+
+        plt.suptitle(f"{self.msg_name}", fontsize=20)
+        plt.tight_layout()
         plt.savefig(os.path.join(self.mask_dir, f"{self.msg_name}_masks.png"))
-        # plt.show()
-
+        plt.close()
+        
 
     def plot_feature_importance(self):
         
@@ -250,7 +307,6 @@ class ResultsVisualizer:
 
         # Best Epoch 계산
         best_epoch = np.argmin(self.history['valid_logloss']) + 1
-        print(f"[{self.msg_name}] Best Validation Loss at Epoch {best_epoch}")
 
         # 그래프
         plt.figure(figsize=(10, 6))
@@ -267,11 +323,11 @@ class ResultsVisualizer:
 
     def plot_all(self):
         """모든 결과 시각화: 마스크, 중요도, 손실 곡선"""
-        print(f"[{self.msg_name}] 시각화 시작")
+        self.plot_confusion_matrix()
         self.plot_masks()
         self.plot_feature_importance()
         self.plot_loss()
-        print(f"[{self.msg_name}] 시각화 완료")
+        print(f"[{self.msg_name}] 시각화 저장 완료")
 
 
 def train_visualize(data_path, save_dir=save_dir):
@@ -285,3 +341,11 @@ def train_visualize(data_path, save_dir=save_dir):
     visualizer.plot_all()
 
     return results
+
+if __name__ == "__main__":
+    paths = glob.glob("/home/seobin1027/tasks/new_log_data/data/results/*.csv")
+
+    for path in paths:
+        print(f"\n Processing file: {os.path.basename(path)}")
+        train_visualize(data_path=path)
+
