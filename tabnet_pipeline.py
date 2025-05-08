@@ -342,10 +342,20 @@ def train_visualize(data_path, save_dir=save_dir):
 
     return results
 
+import traceback
+
 if __name__ == "__main__":
-    paths = glob.glob("/home/seobin1027/tasks/new_log_data/data/results/*.csv")
+    paths = paths[6:]
+
+    error_log_path = os.path.join(save_dir, "error_log.txt")
 
     for path in paths:
         print(f"\n Processing file: {os.path.basename(path)}")
-        train_visualize(data_path=path)
 
+        try:
+            train_visualize(data_path=path)
+        except Exception as e:
+            print(f"[ERROR] {os.path.basename(path)} 처리 중 오류 발생: {e}")
+            with open(error_log_path, "a") as f:
+                f.write(f"File: {path}\n")
+                f.write(f"{traceback.format_exc()}\n\n")
