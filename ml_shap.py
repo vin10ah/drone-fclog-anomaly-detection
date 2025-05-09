@@ -123,7 +123,7 @@ class SHAPPipeline:
         ax.grid(axis='x', linestyle='--', alpha=0.5)
 
         plt.tight_layout()
-        plot_save_path = os.path.join(self.save_dir, f"{field_name}_shap_barplot_absolute.png")
+        plot_save_path = os.path.join(self.save_dir, f"{field_name}_shap_barplot.png")
         plt.savefig(plot_save_path, dpi=300)
         plt.close()
         print(f"   -> SHAP (절대값 기준) 바 플롯 저장 완료: {plot_save_path}")
