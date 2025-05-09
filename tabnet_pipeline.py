@@ -222,7 +222,11 @@ class ResultsVisualizer:
         sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=labels, yticklabels=labels)
         plt.xlabel("Predicted Label")
         plt.ylabel("True Label")
-        plt.title(f"{self.msg_name} Confusion Matrix")
+        title_font = {
+            "fontsize": 16,
+            "fontweight": "bold"
+        }
+        plt.title(f"{self.msg_name} Confusion Matrix", fontdict=title_font, pad=10)
         
         cm_dir = os.path.join(self.viz_dir, "confusion_matrix")
         os.makedirs(cm_dir, exist_ok=True)
@@ -267,7 +271,7 @@ class ResultsVisualizer:
             row, col = divmod(j, n_cols)
             axs[row][col].axis("off")
 
-        plt.suptitle(f"{self.msg_name}", fontsize=20)
+        plt.suptitle(f"{self.msg_name} TabNet Masks", fontsize=30, fontweight="bold")
         plt.tight_layout()
         plt.savefig(os.path.join(self.mask_dir, f"{self.msg_name}_masks.png"))
         plt.close()
@@ -287,9 +291,13 @@ class ResultsVisualizer:
         plt.figure(figsize=(12, 6))
         plt.bar(range(len(sorted_importance)), sorted_importance)
         plt.xticks(range(len(sorted_features)), sorted_features, rotation=45, ha='right')
-        plt.title(f"{self.msg_name} TabNet Feature Importance")
         plt.xlabel("Feature")
         plt.ylabel("Importance")
+        title_font = {
+            "fontsize": 16,
+            "fontweight": "bold"
+        }
+        plt.title(f"{self.msg_name} TabNet Feature Importance", fontdict=title_font, pad=10)
         plt.tight_layout()
         plt.grid(axis='y')
         plt.savefig(os.path.join(self.imp_dir, f"{self.msg_name}_sorted_importance.png"))
@@ -315,7 +323,11 @@ class ResultsVisualizer:
         plt.axvline(x=best_epoch-1, color='red', linestyle='--', label=f'Best Epoch {best_epoch}')
         plt.xlabel('Epoch')
         plt.ylabel('Loss')
-        plt.title('Train vs Validation Loss')
+        title_font = {
+            "fontsize": 16,
+            "fontweight": "bold"
+        }
+        plt.title(f'{self.msg_name} Loss', fontdict=title_font, pad=10)
         plt.legend()
         plt.grid()
         plt.savefig(os.path.join(self.loss_dir, f"{self.msg_name}_loss_curve.png"))
