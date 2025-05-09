@@ -113,9 +113,9 @@ class SHAPPipeline:
             "fontsize": 16,
             "fontweight": "bold"
         }
-        plt.title(f"{field_name} Top {top_n} SHAP Features (Absolute)", fontdict=title_font, pad=10)
+        plt.title(f"{field_name} Top {top_n} SHAP Features", fontdict=title_font, pad=10)
 
-        plt.xlabel('Mean |SHAP value|')
+        plt.xlabel('Mean')
         plt.ylabel('Features')
 
         ax = plt.gca()
