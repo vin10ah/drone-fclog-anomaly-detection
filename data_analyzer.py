@@ -63,7 +63,7 @@ class DataAnalyzer:
 
         if ax is None:
             plt.tight_layout()
-            plt.show()
+            # plt.show()
 
 
 
@@ -107,13 +107,50 @@ class DataAnalyzer:
         save_path = os.path.join(save_dir, filename)
 
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
-        plt.show()
+        # plt.show()
         plt.close(fig)
+
+
+    def get_summary_stats(self):
+        if self.df is None:
+            raise ValueError("Data is not loaded. Please run load(filepath) first.")
+
+        row_count, col_count = self.df.shape
+        column_names = list(self.df.columns)
+        missing = self.df.isnull().any().any()
+
+        stats = self.df.describe().T[['min', 'max', 'mean']]
+
+        summary = []
+        for col in stats.index:
+            if col == self.label_col:
+                continue  # 레이블 제외
+
+            col_data = self.df[col].dropna()
+
+            summary.append({
+                "msg_field": self.msg_field,
+                "feature": col,
+                "rows": row_count,
+                "cols": col_count,
+                "missing": missing,
+                "min": stats.loc[col, "min"],
+                "max": stats.loc[col, "max"],
+                "mean": stats.loc[col, "mean"],
+                "var": col_data.var(),
+                "non_zero_rate": (col_data != 0).mean(),
+                "unique_count": col_data.nunique(),
+                "columns": ', '.join(column_names),
+            })
+        return summary
+
 
 
 if __name__ == "__main__":
     paths = sorted(glob.glob("/home/seobin1027/tasks/new_log_data/data/results/*.csv"))
     save_dir = "plots"
+
+    summary_stats = []
 
     for path in paths:
         print(f"\nProcessing file: {os.path.basename(path)}")
@@ -122,5 +159,13 @@ if __name__ == "__main__":
             analyzer = DataAnalyzer(label_col='label')
             analyzer.load(path)
             analyzer.plot(save_dir=save_dir)
+
+            summary_stats.extend(analyzer.get_summary_stats())  # 통계 수집
+
         except Exception as e:
             print(f"[ERROR] {os.path.basename(path)} 처리 중 오류 발생: {e}")
+
+    # 최종 통계 CSV 저장
+    summary_df = pd.DataFrame(summary_stats)
+    summary_df.to_csv("log_inform_summary.csv", index=False)
+    print("log_summary.csv 저장 완료")
