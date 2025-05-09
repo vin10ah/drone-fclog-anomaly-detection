@@ -287,7 +287,7 @@ class ResultsVisualizer:
 
         plt.figure(figsize=(8, 6))
         ax = plt.gca()  # 현재 축 가져오기
-        ax.set_axisbelow(True)  # ✅ grid를 뒤에 그리도록 설정
+        ax.set_axisbelow(True)  # grid를 뒤에 그리도록 설정
 
         ax.barh(range(len(sorted_importance)), sorted_importance[::-1], color='cornflowerblue')
         ax.set_yticks(range(len(sorted_features)))
@@ -296,12 +296,6 @@ class ResultsVisualizer:
         ax.set_xlabel("Importance")
 
         ax.set_title(f"{self.msg_name} TabNet Feature Importance", fontsize=16, fontweight="bold", pad=10)
-
-        ax.grid(axis='x', linestyle='--', alpha=0.4)  # ✅ 가로줄만 점선으로
-
-        # 불필요한 테두리 제거 (SHAP처럼 깔끔하게)
-        for spine in ['top', 'right', 'left']:
-            ax.spines[spine].set_visible(False)
 
         plt.tight_layout()
         plt.savefig(os.path.join(self.imp_dir, f"{self.msg_name}_sorted_importance.png"))
