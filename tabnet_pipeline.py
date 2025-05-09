@@ -17,8 +17,11 @@ import math
 
 paths = sorted(glob.glob("/home/seobin1027/tasks/new_log_data/data/results/*.csv"))
 
+
+################## save dir 수정 ##################
+
 # 저장 경로 설정
-save_dir = "./tabnet_results"
+save_dir = "./tabnet_results_2"
 os.makedirs(save_dir, exist_ok=True)
 
 class my_metric(Metric):
@@ -42,13 +45,10 @@ class my_metric(Metric):
         return recall_score(y_true, y_pred)
 
 
-
-
-
 # TabNet
 
 class TabNetPipeline:
-    def __init__(self, data_path, scaler=None, save_dir="./tabnet_results", params=None):
+    def __init__(self, data_path, scaler=None, save_dir="./tabnet_results", params=None): 
         self.data_path = data_path
         self.msg_name = os.path.basename(self.data_path).split("_")[0]
         self.scaler = scaler
@@ -263,7 +263,7 @@ class ResultsVisualizer:
             im = ax.imshow(np.asarray(mask), aspect="auto")
             ax.set_title(f"mask {i}")
             ax.set_xticks(range(len(self.feature_names)))
-            ax.set_xticklabels(self.feature_names, rotation=90)
+            ax.set_xticklabels(self.feature_names, rotation=45)
             ax.set_xlabel("Features")
             ax.set_ylabel("Samples")
 
