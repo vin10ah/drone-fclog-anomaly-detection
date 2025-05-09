@@ -74,8 +74,8 @@ class SHAPPipeline:
             })
             shap_importance['field'] = msg_name
             shap_importance['shap_ratio'] = shap_importance['mean_abs_shap'] / shap_importance['mean_abs_shap'].sum()
-            shap_importance = shap_importance[['field', 'feature', 'shap_ratio']]
-            shap_importance = shap_importance.sort_values(by='shap_ratio', ascending=False)
+            shap_importance = shap_importance[['field', 'feature', 'mean_abs_shap', 'shap_ratio']]
+            shap_importance = shap_importance.sort_values(by='mean_abs_shap', ascending=False)
 
             self.all_shap_results.append(shap_importance)
 
