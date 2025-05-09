@@ -300,8 +300,8 @@ class ResultsVisualizer:
             "fontweight": "bold"
         }
         plt.title(f"{self.msg_name} TabNet Feature Importance", fontdict=title_font, pad=10)
+        plt.grid(True)
         plt.tight_layout()
-        plt.grid(axis='y')
         plt.savefig(os.path.join(self.imp_dir, f"{self.msg_name}_sorted_importance.png"))
         # plt.show()
 
