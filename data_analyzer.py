@@ -4,6 +4,7 @@ import os
 import matplotlib.pyplot as plt
 import datetime
 import matplotlib.ticker as ticker 
+import glob
 
 
 class DataAnalyzer:
@@ -110,4 +111,16 @@ class DataAnalyzer:
         plt.close(fig)
 
 
+if __name__ == "__main__":
+    paths = sorted(glob.glob("/home/seobin1027/tasks/new_log_data/data/results/*.csv"))
+    save_dir = "plots"
 
+    for path in paths:
+        print(f"\nProcessing file: {os.path.basename(path)}")
+
+        try:
+            analyzer = DataAnalyzer(label_col='label')
+            analyzer.load(path)
+            analyzer.plot(save_dir=save_dir)
+        except Exception as e:
+            print(f"[ERROR] {os.path.basename(path)} 처리 중 오류 발생: {e}")
