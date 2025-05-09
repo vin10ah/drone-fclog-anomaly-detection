@@ -140,7 +140,6 @@ class DataAnalyzer:
                 "var": col_data.var(),
                 "non_zero_rate": (col_data != 0).mean(),
                 "unique_count": col_data.nunique(),
-                "columns": ', '.join(column_names),
             })
         return summary
 
