@@ -106,7 +106,7 @@ class SHAPPipeline:
         top_features = shap_importance.head(top_n)
 
         plt.figure(figsize=(8, 6))
-        plt.barh(top_features['feature'][::-1], top_features['shap_ratio'][::-1], color='skyblue')
+        plt.barh(top_features['feature'][::-1], top_features['shap_ratio'][::-1], color='royalblue')
         plt.title(f"{field_name} Top {top_n} SHAP Features", fontsize=16)
         plt.xlabel('SHAP Importance Ratio')
         plt.ylabel('Features')
