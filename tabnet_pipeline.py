@@ -163,9 +163,9 @@ class TabNetPipeline:
 
         # CSV 저장
         if save_csv:
-            results_dir = os.path.join(self.save_dir, "results")
-            os.makedirs(results_dir, exist_ok=True)
-            result_file = os.path.join(results_dir, "val_metrics.csv")
+            # results_dir = os.path.join(self.save_dir, "results")
+            # os.makedirs(results_dir, exist_ok=True)
+            result_file = os.path.join(self.save_dir, "val_metrics.csv")
 
             df = pd.DataFrame([metrics])
             if os.path.exists(result_file):
@@ -287,7 +287,7 @@ class ResultsVisualizer:
         plt.figure(figsize=(12, 6))
         plt.bar(range(len(sorted_importance)), sorted_importance)
         plt.xticks(range(len(sorted_features)), sorted_features, rotation=45, ha='right')
-        plt.title("TabNet Feature Importance (Average over Validation Samples)")
+        plt.title(f"{self.msg_name} TabNet Feature Importance")
         plt.xlabel("Feature")
         plt.ylabel("Importance")
         plt.tight_layout()
