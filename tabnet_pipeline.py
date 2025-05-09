@@ -21,7 +21,7 @@ paths = sorted(glob.glob("/home/seobin1027/tasks/new_log_data/data/results/*.csv
 ################## save dir 수정 ##################
 
 # 저장 경로 설정
-save_dir = "./tabnet_results_2"
+save_dir = "./tabnet_results_re"
 os.makedirs(save_dir, exist_ok=True)
 
 class my_metric(Metric):
@@ -289,10 +289,10 @@ class ResultsVisualizer:
 
         # 3. 시각화
         plt.figure(figsize=(12, 6))
-        plt.bar(range(len(sorted_importance)), sorted_importance)
-        plt.xticks(range(len(sorted_features)), sorted_features, rotation=45, ha='right')
-        plt.xlabel("Feature")
-        plt.ylabel("Importance")
+        plt.barh(range(len(sorted_importance)), sorted_importance[::-1], color='cornflowerblue')
+        plt.yticks(range(len(sorted_features)), sorted_features[::-1])
+        plt.ylabel("Feature")
+        plt.xlabel("Importance")
         title_font = {
             "fontsize": 16,
             "fontweight": "bold"
