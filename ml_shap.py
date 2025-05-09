@@ -103,26 +103,30 @@ class SHAPPipeline:
         print(f"✔ 모델 성능 저장 완료: {model_save_path}")
 
     def plot_shap_bar(self, shap_importance, field_name, top_n=10):
-        top_features = shap_importance.head(top_n)
+        # 수치 기준으로 정렬 및 상위 N개 추출
+        top_features = shap_importance.sort_values(by='mean_abs_shap', ascending=False).head(top_n)
 
         plt.figure(figsize=(8, 6))
-        plt.barh(top_features['feature'][::-1], top_features['shap_ratio'][::-1], color='royalblue')
-        
+        plt.barh(top_features['feature'][::-1], top_features['mean_abs_shap'][::-1], color='royalblue')
+
         title_font = {
             "fontsize": 16,
             "fontweight": "bold"
         }
-        plt.title(f"{field_name} Top {top_n} SHAP Features", fontdict=title_font, pad=10)
-        
-        plt.xlabel('SHAP Importance Ratio')
-        plt.ylabel('Features')
-        plt.grid(True)
-        plt.tight_layout()
+        plt.title(f"{field_name} Top {top_n} SHAP Features (Absolute)", fontdict=title_font, pad=10)
 
-        plot_save_path = os.path.join(self.save_dir, f"{field_name}_shap_barplot.png")
+        plt.xlabel('Mean |SHAP value|')
+        plt.ylabel('Features')
+
+        ax = plt.gca()
+        ax.set_axisbelow(True)
+        ax.grid(axis='x', linestyle='--', alpha=0.5)
+
+        plt.tight_layout()
+        plot_save_path = os.path.join(self.save_dir, f"{field_name}_shap_barplot_absolute.png")
         plt.savefig(plot_save_path, dpi=300)
         plt.close()
-        print(f"   -> SHAP 바 플롯 저장 완료: {plot_save_path}")
+        print(f"   -> SHAP (절대값 기준) 바 플롯 저장 완료: {plot_save_path}")
 
 
 if __name__ == "__main__":
