@@ -34,12 +34,12 @@ class SHAPPipeline:
         try:
             # 데이터 로드
             df = pd.read_csv(filepath)
-            n_df = df.drop(["timestamp", "TimeUS"], axis=1)
+            n_df = df.drop(["timestamp", "TimeUS"], axis=1, errors="ignore")
 
             # PyCaret 모델링
             setup(data=n_df, target='label', session_id=42, verbose=False)
             tree_models = ['rf', 'et', 'dt', 'ada', 'gbc']
-            best_model = compare_models(include=tree_models, sort="F1")
+            best_model = compare_models(include=tree_models, sort="Recall")
 
             # 모델 성능 저장
             model_result = pull()
@@ -48,8 +48,12 @@ class SHAPPipeline:
             self.all_model_results.append(model_result)
 
             # 클래스 균형 샘플링
-            normal_sample = n_df[n_df['label'] == 0].sample(n=1500, random_state=42)
-            anomaly_sample = n_df[n_df['label'] == 1].sample(n=1500, random_state=42)
+            normal = n_df[n_df['label'] == 0]
+            anomaly = n_df[n_df['label'] == 1]
+
+            normal_sample = normal.sample(n=min(len(normal), 1500), random_state=42)
+            anomaly_sample = anomaly.sample(n=min(len(anomaly), 1500), random_state=42)
+
             sample_df = pd.concat([normal_sample, anomaly_sample])
             X = sample_df.drop(columns=['label'])
 
@@ -113,3 +117,9 @@ class SHAPPipeline:
         plt.savefig(plot_save_path, dpi=300)
         plt.close()
         print(f"   -> SHAP 바 플롯 저장 완료: {plot_save_path}")
+
+
+if __name__ == "__main__":
+    pipeline = SHAPPipeline()
+    pipeline.run_all()
+    pipeline.save_results()
