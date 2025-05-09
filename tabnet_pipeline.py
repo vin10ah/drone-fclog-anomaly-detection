@@ -288,7 +288,7 @@ class ResultsVisualizer:
         sorted_features = [self.feature_names[i] for i in sorted_idx]
 
         # 3. 시각화
-        plt.figure(figsize=(12, 6))
+        plt.figure(figsize=(8, 6))
         plt.barh(range(len(sorted_importance)), sorted_importance[::-1], color='cornflowerblue')
         plt.yticks(range(len(sorted_features)), sorted_features[::-1])
         plt.ylabel("Feature")
