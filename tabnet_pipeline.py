@@ -286,21 +286,27 @@ class ResultsVisualizer:
         sorted_features = [self.feature_names[i] for i in sorted_idx]
 
         plt.figure(figsize=(8, 6))
-        ax = plt.gca()  # 현재 축 가져오기
-        ax.set_axisbelow(True)  # grid를 뒤에 그리도록 설정
+        ax = plt.gca()
 
+        # 격자를 막대 뒤에 그리기
+        ax.set_axisbelow(True)
         ax.barh(range(len(sorted_importance)), sorted_importance[::-1], color='cornflowerblue')
+
+        # y축 설정
         ax.set_yticks(range(len(sorted_features)))
         ax.set_yticklabels(sorted_features[::-1])
+
+        # 라벨 & 제목
         ax.set_ylabel("Feature")
         ax.set_xlabel("Importance")
-
         ax.set_title(f"{self.msg_name} TabNet Feature Importance", fontsize=16, fontweight="bold", pad=10)
+
+        # grid 설정: x축에 점선으로, 막대 뒤에 위치
+        ax.grid(axis='x', linestyle='--', alpha=0.5)
 
         plt.tight_layout()
         plt.savefig(os.path.join(self.imp_dir, f"{self.msg_name}_sorted_importance.png"))
         plt.close()
-
 
     def plot_loss(self):
         loss_df = pd.DataFrame({
