@@ -107,7 +107,13 @@ class SHAPPipeline:
 
         plt.figure(figsize=(8, 6))
         plt.barh(top_features['feature'][::-1], top_features['shap_ratio'][::-1], color='royalblue')
-        plt.title(f"{field_name} Top {top_n} SHAP Features", fontsize=16)
+        
+        title_font = {
+            "fontsize": 16,
+            "fontweight": "bold"
+        }
+        plt.title(f"{field_name} Top {top_n} SHAP Features", fontdict=title_font, pad=10)
+        
         plt.xlabel('SHAP Importance Ratio')
         plt.ylabel('Features')
         plt.grid(True)
