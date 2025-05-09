@@ -280,30 +280,32 @@ class ResultsVisualizer:
         
 
     def plot_feature_importance(self):
-        
-        # 1. 평균 feature importance 계산
         mean_feature_importance = np.mean(self.explain_matrix, axis=0)
-
-        # 2. 정렬 (내림차순으로 보기 좋게)
         sorted_idx = np.argsort(mean_feature_importance)[::-1]
         sorted_importance = mean_feature_importance[sorted_idx]
         sorted_features = [self.feature_names[i] for i in sorted_idx]
 
-        # 3. 시각화
         plt.figure(figsize=(8, 6))
-        plt.barh(range(len(sorted_importance)), sorted_importance[::-1], color='cornflowerblue')
-        plt.yticks(range(len(sorted_features)), sorted_features[::-1])
-        plt.ylabel("Feature")
-        plt.xlabel("Importance")
-        title_font = {
-            "fontsize": 16,
-            "fontweight": "bold"
-        }
-        plt.title(f"{self.msg_name} TabNet Feature Importance", fontdict=title_font, pad=10)
-        plt.grid(True)
+        ax = plt.gca()  # 현재 축 가져오기
+        ax.set_axisbelow(True)  # ✅ grid를 뒤에 그리도록 설정
+
+        ax.barh(range(len(sorted_importance)), sorted_importance[::-1], color='cornflowerblue')
+        ax.set_yticks(range(len(sorted_features)))
+        ax.set_yticklabels(sorted_features[::-1])
+        ax.set_ylabel("Feature")
+        ax.set_xlabel("Importance")
+
+        ax.set_title(f"{self.msg_name} TabNet Feature Importance", fontsize=16, fontweight="bold", pad=10)
+
+        ax.grid(axis='x', linestyle='--', alpha=0.4)  # ✅ 가로줄만 점선으로
+
+        # 불필요한 테두리 제거 (SHAP처럼 깔끔하게)
+        for spine in ['top', 'right', 'left']:
+            ax.spines[spine].set_visible(False)
+
         plt.tight_layout()
         plt.savefig(os.path.join(self.imp_dir, f"{self.msg_name}_sorted_importance.png"))
-        # plt.show()
+        plt.close()
 
 
     def plot_loss(self):
