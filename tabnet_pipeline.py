@@ -345,7 +345,7 @@ def train_visualize(data_path, save_dir=save_dir):
 import traceback
 
 if __name__ == "__main__":
-    paths = paths[6:]
+    paths = paths
 
     error_log_path = os.path.join(save_dir, "error_log.txt")
 
