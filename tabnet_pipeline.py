@@ -107,6 +107,8 @@ class TabNetPipeline:
     def load_prepare_data(self):
         df = pd.read_csv(self.data_path)
         df = df.drop(columns=["timestamp", "TimeUS"], axis=1)
+        df = df.dropna(axis=1, how='any')  # NaN이 있는 컬럼 제거(CTUN)
+
 
         X = df.drop(columns=["label"])
         y = df["label"]
