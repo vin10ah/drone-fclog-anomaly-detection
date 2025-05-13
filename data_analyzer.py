@@ -6,6 +6,8 @@ import datetime
 import matplotlib.ticker as ticker 
 import glob
 
+import seaborn as sns
+
 
 class DataAnalyzer:
     def __init__(self, label_col='label'):
@@ -26,7 +28,7 @@ class DataAnalyzer:
         else:
             missing_info = f"Missing columns ({len(missing_cols)}): {list(missing_cols.index)}"
 
-        print(f"Message field: {self.msg_field} | Shape: {self.df.shape} | {missing_info}")
+        # print(f"Message field: {self.msg_field} | Shape: {self.df.shape} | {missing_info}")
 
     
     def plot_feature_trend(self, feature: str, ax=None, sample_rate=10):
@@ -143,6 +145,40 @@ class DataAnalyzer:
             })
         return summary
 
+    def save_correlation_plot(self, save_dir="analyze/corr_graph"):
+        if self.df is None:
+            raise ValueError("Data is not loaded. Please run load(filepath) first.")
+
+        # 레이블 컬럼 제외
+        df_corr = self.df.drop(columns=[self.label_col], errors='ignore')
+
+        # 상관관계 행렬 계산
+        corr_matrix = df_corr.corr()
+
+        # 저장 디렉토리 생성
+        os.makedirs(save_dir, exist_ok=True)
+
+        plt.figure(figsize=(12, 10))
+
+        sns.heatmap(
+            corr_matrix, 
+            annot=True, 
+            fmt=".2f", 
+            cmap="coolwarm", 
+            square=True, 
+            cbar=True,
+            annot_kws={"size": 15, "weight": "bold"}
+            )
+        
+        plt.title(f"{self.msg_field} Correlation Heatmap", fontweight="bold", pad=20, fontsize=20)
+        plt.tight_layout()
+
+        filename = f"{self.msg_field}_corr.png"
+        save_path = os.path.join(save_dir, filename)
+        plt.savefig(save_path, dpi=300)
+        plt.close()
+        print(f"Saved correlation heatmap: {save_path}")
+
 
 
 if __name__ == "__main__":
@@ -158,6 +194,7 @@ if __name__ == "__main__":
             analyzer = DataAnalyzer(label_col='label')
             analyzer.load(path)
             analyzer.plot(save_dir=save_dir)
+            analyzer.save_correlation_plot()
 
             summary_stats.extend(analyzer.get_summary_stats())  # 통계 수집
 
