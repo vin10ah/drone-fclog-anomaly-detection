@@ -25,7 +25,7 @@ class DimReducer:
         self.y = df[self.label_col]
         self.features = [col for col in df.columns if col != self.label_col]
 
-    def sample_and_scale(self, random_state=42, sample_size=3000):
+    def _sample_and_scale(self, random_state=42, sample_size=3000):
         df_sample, _ = train_test_split(
             self.df, train_size=sample_size, stratify=self.df[self.label_col], random_state=42
         )
