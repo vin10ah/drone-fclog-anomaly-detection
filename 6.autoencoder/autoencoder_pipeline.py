@@ -47,9 +47,13 @@ def compute_threshold(model, trn_tensor, quantile):
     return threshold.item()
 
 def train(trn_loader, **params):
+    save_dir = './results/models'
+    os.makedirs(save_dir, exist_ok=True)
+
     print(f'device: {device}')
     lr = params.get('lr')
     epochs = params.get('epochs')
+    batch_size = params.get(batch_size)
 
     model = Autoencoder().to(device)
     criterion = nn.MSELoss()
@@ -74,6 +78,9 @@ def train(trn_loader, **params):
         avg_loss = epoch_loss / len(trn_loader)
         loss_lst.append(avg_loss)
         epoch_bar.set_postfix(loss=avg_loss)
+
+    filename = f"ae_{batch_size}_lr{lr:.0e}_ep{epochs}"
+    torch.save(model.state_dict(), f'models/{filename}.pth')
 
     return model, loss_lst
 
