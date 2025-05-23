@@ -11,3 +11,6 @@ __pycache__/
 
 # Jupyter 노트북 체크포인트
 .ipynb_checkpoints/
+
+# 데이터
+0.data/
