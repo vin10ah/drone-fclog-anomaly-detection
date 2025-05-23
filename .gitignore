@@ -1,0 +1,13 @@
+# 결과물 제외
+results/
+logs/
+*.log
+*.csv
+*.png
+
+# Python 관련
+__pycache__/
+*.pyc
+
+# Jupyter 노트북 체크포인트
+.ipynb_checkpoints/
