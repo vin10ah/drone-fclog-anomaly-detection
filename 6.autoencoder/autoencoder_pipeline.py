@@ -53,7 +53,7 @@ def train(trn_loader, **params):
     print(f'device: {device}')
     lr = params.get('lr')
     epochs = params.get('epochs')
-    batch_size = params.get(batch_size)
+    batch_size = params.get('batch_size')
 
     model = Autoencoder().to(device)
     criterion = nn.MSELoss()
@@ -80,7 +80,7 @@ def train(trn_loader, **params):
         epoch_bar.set_postfix(loss=avg_loss)
 
     filename = f"ae_{batch_size}_lr{lr:.0e}_ep{epochs}"
-    torch.save(model.state_dict(), f'models/{filename}.pth')
+    torch.save(model.state_dict(), f'{save_dir}/{filename}.pth')
 
     return model, loss_lst
 
@@ -261,7 +261,7 @@ def main():
 
     params = {
         'batch_size': 256,
-        'lr': 1e-3,
+        'lr': 1e-5,
         'quantile': 0.80,
         'epochs': 500
     }
