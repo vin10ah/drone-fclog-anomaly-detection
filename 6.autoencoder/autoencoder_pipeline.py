@@ -175,6 +175,9 @@ def compare_confusion_matrices(y_true_normal, y_pred_normal, y_true_abnormal, y_
     # CSV 저장 추가!
     save_report_to_csv(report_normal, report_abnormal, **params)
 
+
+##### Error 그래프 정상/이상 #####
+
 def plot_mse_comparison(normal_error, abnormal_error, threshold, **params):
     batch_size = params.get('batch_size')
     lr = params.get('lr')
@@ -209,6 +212,9 @@ def plot_mse_comparison(normal_error, abnormal_error, threshold, **params):
     plt.savefig(filepath, bbox_inches='tight')
     plt.close()
 
+
+##### loss 그래프 ######
+
 def plot_training_loss(loss_list, batch_size, lr, quantile, epochs, save_dir='./results/training_loss'):
     os.makedirs(save_dir, exist_ok=True)
     plt.figure(figsize=(8, 4))
@@ -226,6 +232,9 @@ def plot_training_loss(loss_list, batch_size, lr, quantile, epochs, save_dir='./
     plt.savefig(filepath, bbox_inches='tight')
     plt.close()
     print(f"Training loss plot saved to: {filepath}")
+
+
+##### Run All #####
 
 def main():
     df1 = pd.read_csv('../0.data/results/XKF1_merged.csv')
