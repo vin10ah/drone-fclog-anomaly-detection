@@ -79,7 +79,7 @@ def train(trn_loader, **params):
         loss_lst.append(avg_loss)
         epoch_bar.set_postfix(loss=avg_loss)
 
-    filename = f"ae_{batch_size}_lr{lr:.0e}_ep{epochs}"
+    filename = f"ae_bs{batch_size}_lr{lr:.0e}_ep{epochs}"
     torch.save(model.state_dict(), f'{save_dir}/{filename}.pth')
 
     return model, loss_lst

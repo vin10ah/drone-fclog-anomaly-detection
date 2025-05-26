@@ -14,6 +14,17 @@ from torch.utils.data import DataLoader, TensorDataset
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+import random
+
+##### seed 고정 코드 #####
+def set_seed(seed=42):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True  # 느리지만 재현성 보장
+    torch.backends.cudnn.benchmark = False
+
 class Autoencoder(nn.Module):
     def __init__(self):
         super(Autoencoder, self).__init__()
@@ -167,7 +178,7 @@ def compare_confusion_matrices(y_true_normal, y_pred_normal, y_true_abnormal, y_
     plt.suptitle(suptitle, fontsize=14, fontweight="bold", y=1.05)
     plt.tight_layout()
 
-    filename = f"cm_bs{batch_size}_lr{lr:.0e}_q{quantile:.2f}_ep{epochs}.png"
+    filename = f"cm_bs{batch_size}_lr{lr:.0e}_ep{epochs}_q{quantile:.2f}.png"
     filepath = os.path.join(save_dir, filename)
     plt.savefig(filepath, bbox_inches='tight')
     plt.close()
@@ -215,7 +226,7 @@ def plot_mse_comparison(normal_error, abnormal_error, threshold, **params):
     plt.suptitle(suptitle, fontsize=14, fontweight="bold", y=1.05)
     plt.tight_layout()
 
-    filename = f"recon_errors_bs{batch_size}_lr{lr:.0e}_q{quantile:.2f}_ep{epochs}.png"
+    filename = f"recon_errors_bs{batch_size}_lr{lr:.0e}_ep{epochs}_q{quantile:.2f}.png"
     filepath = os.path.join(save_dir, filename)
     plt.savefig(filepath, bbox_inches='tight')
     plt.close()
@@ -235,7 +246,7 @@ def plot_training_loss(loss_list, batch_size, lr, quantile, epochs, save_dir='./
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
-    filename = f"training_loss_bs{batch_size}_lr{lr:.0e}_q{quantile:.2f}_ep{epochs}.png"
+    filename = f"training_loss_bs{batch_size}_lr{lr:.0e}_ep{epochs}.png"
     filepath = os.path.join(save_dir, filename)
     plt.savefig(filepath, bbox_inches='tight')
     plt.close()
@@ -245,7 +256,8 @@ import argparse
 
 ##### Run All #####
 
-def run(mode): 
+def run(mode, params): 
+    set_seed(42)
     # 데이터 불러오기 & concat 
     df1 = pd.read_csv('../0.data/results/XKF1_merged.csv')
     df2 = pd.read_csv('../0.data/results/XKF2_merged.csv')
@@ -254,7 +266,7 @@ def run(mode):
     select_col2 = ['AX', 'AY', 'AZ', 'label']
     concat_df = pd.concat([df1[select_col1], df2[select_col2]], axis=1)
     
-    # 정상과 이상 분리리
+    # 정상과 이상 분리
     nor_df = concat_df.loc[concat_df['label'] == 0]
     ab_df = concat_df.loc[concat_df['label'] == 1]
 
@@ -263,14 +275,8 @@ def run(mode):
     ab_tst = ab_df.sample(n=len(nor_tst), random_state=42).drop(columns=['label'])
     X_trn = nor_trn.drop(columns=['label'])
 
-    params = {
-        'batch_size': 256,
-        'lr': 1e-5,
-        'quantile': 0.80,
-        'epochs': 500
-    }
 
-    # 데이터셋 전처리리
+    # 데이터셋 전처리
     scaler = MinMaxScaler()
     scaled_X_trn = scaler.fit_transform(X_trn)
     X_trn_tensor = torch.tensor(scaled_X_trn, dtype=torch.float32)
@@ -320,10 +326,21 @@ def run(mode):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=["train", "eval"], required=True)
+    parser.add_argument('--batch_size', type=int, default=256, help='Training batch size')
+    parser.add_argument('--lr', type=float, default=1e-5, help='Learning rate')
+    parser.add_argument('--quantile', type=float, default=0.95, help='Quantile for threshold')
+    parser.add_argument('--epochs', type=int, default=500, help='Number of training epochs')
     args = parser.parse_args()
 
+    params = {
+        'batch_size': args.batch_size,
+        'lr': args.lr,
+        'quantile': args.quantile,
+        'epochs': args.epochs
+    }
+
     if args.mode == "train":
-        run("train")
+        run("train", params)
     elif args.mode == "eval":
-        run("eval")
+        run("eval", params)
 
