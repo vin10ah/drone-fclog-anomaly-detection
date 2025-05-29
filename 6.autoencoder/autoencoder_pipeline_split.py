@@ -25,6 +25,8 @@ def set_seed(seed=42):
     torch.backends.cudnn.deterministic = True  # 느리지만 재현성 보장
     torch.backends.cudnn.benchmark = False
 
+
+##### Autoencoder #####
 class Autoencoder(nn.Module):
     def __init__(self):
         super(Autoencoder, self).__init__()
@@ -329,7 +331,7 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', type=int, default=256, help='Training batch size')
     parser.add_argument('--lr', type=float, default=1e-5, help='Learning rate')
     parser.add_argument('--quantile', type=float, default=0.95, help='Quantile for threshold')
-    parser.add_argument('--epochs', type=int, default=500, help='Number of training epochs')
+    parser.add_argument('--epochs', type=int, default=100, help='Number of training epochs')
     args = parser.parse_args()
 
     params = {
