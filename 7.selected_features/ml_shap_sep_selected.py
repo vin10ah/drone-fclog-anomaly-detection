@@ -159,5 +159,3 @@ if __name__ == "__main__":
                 f.write(f"File: {path}\n")
                 f.write(traceback.format_exc())
                 f.write("\n\n")
-
-        break
