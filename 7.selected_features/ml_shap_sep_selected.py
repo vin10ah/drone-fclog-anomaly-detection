@@ -152,7 +152,7 @@ if __name__ == "__main__":
         print(f"\n▶ Processing file: {os.path.basename(path)}")
 
         try:
-            pipeline = SHAPPipeline(data_path=path,msg_name=msg_name, save_dir=save_dir)
+            pipeline = SHAPPipeline(data_path=path, msg_name=msg_name, save_dir=save_dir)
             pipeline.run()
         except Exception as e:
             print(f"[ERROR] {os.path.basename(path)} 처리 중 오류 발생: {e}")
