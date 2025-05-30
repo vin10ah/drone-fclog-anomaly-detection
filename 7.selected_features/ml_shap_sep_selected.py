@@ -25,8 +25,8 @@ class SHAPPipeline:
         self.save_dir = save_dir
         os.makedirs(self.save_dir, exist_ok=True)
 
-        self.shap_csv_path = os.path.join(self.save_dir, "all_fields_shap_importance_ratio.csv")
-        self.model_csv_path = os.path.join(self.save_dir, "all_fields_model_comparison.csv")
+        self.shap_csv_path = os.path.join(self.save_dir, "selected_fields_shap_importance_ratio.csv")
+        self.model_csv_path = os.path.join(self.save_dir, "selected_fields_model_comparison.csv")
 
         # 선정된 피처 목록 파일 불러오기
         self.feature_df = pd.read_csv("../0.data/selected_features_20250529.csv")
@@ -36,13 +36,14 @@ class SHAPPipeline:
             print(f"\n▶ Processing {self.msg_name}...")
 
             # 선정된 피처 리스트
-            feature_lst = self.feature_df.loc[self.feature_df["msg_field"] == "AHR2", "feature_list"].values[0].split(", ")
+            feature_lst = self.feature_df.loc[self.feature_df["msg_field"] == self.msg_name, "feature_list"].values[0].split(", ")
             feature_lst.append("label")
 
             # 데이터 로드 및 전처리
             df = pd.read_csv(self.data_path)
             n_df = df.drop(["timestamp", "TimeUS"], axis=1, errors="ignore")
             n_df = n_df[feature_lst]
+            print(n_df.columns)
 
             setup(data=n_df, target='label', session_id=42, verbose=False)
             tree_models = ['rf', 'dt', 'gbc']
@@ -110,7 +111,7 @@ class SHAPPipeline:
 
         plt.figure(figsize=(8, 6))
         plt.barh(top_features['feature'][::-1], top_features['mean_abs_shap'][::-1], color='royalblue')
-        plt.title(f"{self.msg_name} Top {top_n} SHAP Features\n(Best: {model_name})", fontsize=14, fontweight="bold", pad=10)
+        plt.title(f"{self.msg_name}(selected) Top {top_n} SHAP Features\n(Best: {model_name})", fontsize=14, fontweight="bold", pad=10)
         plt.xlabel('Mean |SHAP Value|')
         plt.ylabel('Features')
 
