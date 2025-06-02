@@ -46,7 +46,7 @@ class my_metric(Metric):
 # TabNet
 
 class TabNetPipeline:
-    def __init__(self, data_path, scaler=None, save_dir=None, params=None): 
+    def __init__(self, data_path, selected_path, scaler=None, save_dir=None, params=None): 
         self.data_path = data_path
         self.msg_name = os.path.basename(self.data_path).split("_")[0]
         self.scaler = scaler
@@ -60,7 +60,7 @@ class TabNetPipeline:
         self.best_model_dir = os.path.join(self.save_dir, "best_model")
         os.makedirs(self.best_model_dir, exist_ok=True)
 
-        self.feature_df = pd.read_csv("../0.data/selected_features_20250529.csv")
+        self.feature_df = pd.read_csv(selected_path)
 
     def model_params(self):
         return {
@@ -352,7 +352,7 @@ class ResultsVisualizer:
 
 
 def train_visualize(data_path, save_dir=save_dir):
-    pipeline = TabNetPipeline(data_path=data_path, scaler=StandardScaler(), save_dir=save_dir)
+    pipeline = TabNetPipeline(data_path=data_path, scaler=StandardScaler(), save_dir=save_dir, selected_path=selected_path)
     pipeline.load_prepare_data()
     pipeline.train()
 
@@ -366,8 +366,11 @@ def train_visualize(data_path, save_dir=save_dir):
 import traceback
 
 # 선정된 피처 파일 불러오기
-feature_df = pd.read_csv('../0.data/selected_features_20250529.csv')
+selected_path = '../0.data/selected_features.csv'
+feature_df = pd.read_csv(selected_path)
 msg_lst = list(feature_df['msg_field'].values)
+
+msg_lst = ['MCU']
 
 # msg_lst = ["IMU"]
 

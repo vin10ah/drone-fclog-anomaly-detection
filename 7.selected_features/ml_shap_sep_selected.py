@@ -19,7 +19,7 @@ def timeout_handler(signum, frame):
 
 
 class SHAPPipeline:
-    def __init__(self, data_path, msg_name, save_dir=None,):
+    def __init__(self, data_path, msg_name, selected_path, save_dir=None,):
         self.data_path = data_path
         self.msg_name = msg_name
         self.save_dir = save_dir
@@ -29,7 +29,7 @@ class SHAPPipeline:
         self.model_csv_path = os.path.join(self.save_dir, "selected_fields_model_comparison.csv")
 
         # 선정된 피처 목록 파일 불러오기
-        self.feature_df = pd.read_csv("../0.data/selected_features_20250529.csv")
+        self.feature_df = pd.read_csv(selected_path)
 
     def run(self):
         try:
@@ -137,10 +137,11 @@ save_dir = "./results/ml_shap"
 os.makedirs(save_dir, exist_ok=True)
 
 # 처리 대상 파일 목록
-feature_df = pd.read_csv('../0.data/selected_features_20250529.csv')
+selected_path = '../0.data/selected_features.csv'
+feature_df = pd.read_csv(selected_path)
 msg_lst = list(feature_df['msg_field'].values)
 
-# msg_lst = ["IMU"]
+msg_lst = ["MCU"]
 
 # 에러 로그 파일 경로
 error_log_path = os.path.join(save_dir, "error_log.txt")
@@ -154,7 +155,7 @@ if __name__ == "__main__":
         print(f"\n▶ Processing file: {os.path.basename(path)}")
 
         try:
-            pipeline = SHAPPipeline(data_path=path, msg_name=msg_name, save_dir=save_dir)
+            pipeline = SHAPPipeline(data_path=path, msg_name=msg_name, save_dir=save_dir, selected_path=selected_path)
             pipeline.run()
         except Exception as e:
             print(f"[ERROR] {os.path.basename(path)} 처리 중 오류 발생: {e}")

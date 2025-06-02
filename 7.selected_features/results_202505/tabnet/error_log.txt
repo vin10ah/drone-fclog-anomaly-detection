@@ -1,0 +1,92 @@
+File: ../0.data/results/AHR2_merged.csv
+Traceback (most recent call last):
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 380, in <module>
+    train_visualize(data_path=path)
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 356, in train_visualize
+    pipeline.load_prepare_data()
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 115, in load_prepare_data
+    n_df = n_df[feature_lst]
+           ^^^^
+UnboundLocalError: cannot access local variable 'n_df' where it is not associated with a value
+
+
+File: ../0.data/results/AHR2_merged.csv
+Traceback (most recent call last):
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 380, in <module>
+    train_visualize(data_path=path)
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 361, in train_visualize
+    visualizer = ResultsVisualizer(pipeline)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 203, in __init__
+    pipeline.model.load_model(self.best_model_path)
+  File "/home/seobin1027/miniconda3/envs/drone/lib/python3.11/site-packages/pytorch_tabnet/abstract_model.py", line 448, in load_model
+    with zipfile.ZipFile(filepath) as z:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/seobin1027/miniconda3/envs/drone/lib/python3.11/zipfile.py", line 1295, in __init__
+    self.fp = io.open(file, filemode)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: './results/tabnet/best_model/AHR2_tabnet_best_model.zip'
+
+
+File: ../0.data/results/CTUN_merged.csv
+Traceback (most recent call last):
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 380, in <module>
+    train_visualize(data_path=path)
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 356, in train_visualize
+    pipeline.load_prepare_data()
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 115, in load_prepare_data
+    n_df = df[feature_lst]
+           ~~^^^^^^^^^^^^^
+  File "/home/seobin1027/miniconda3/envs/drone/lib/python3.11/site-packages/pandas/core/frame.py", line 3899, in __getitem__
+    indexer = self.columns._get_indexer_strict(key, "columns")[1]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/seobin1027/miniconda3/envs/drone/lib/python3.11/site-packages/pandas/core/indexes/base.py", line 6115, in _get_indexer_strict
+    self._raise_if_missing(keyarr, indexer, axis_name)
+  File "/home/seobin1027/miniconda3/envs/drone/lib/python3.11/site-packages/pandas/core/indexes/base.py", line 6179, in _raise_if_missing
+    raise KeyError(f"{not_found} not in index")
+KeyError: "['THh'] not in index"
+
+
+File: ../0.data/results/MCU_merged.csv
+Traceback (most recent call last):
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 380, in <module>
+    train_visualize(data_path=path)
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 356, in train_visualize
+    pipeline.load_prepare_data()
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 115, in load_prepare_data
+    n_df = df[feature_lst]
+           ~~^^^^^^^^^^^^^
+  File "/home/seobin1027/miniconda3/envs/drone/lib/python3.11/site-packages/pandas/core/frame.py", line 3899, in __getitem__
+    indexer = self.columns._get_indexer_strict(key, "columns")[1]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/seobin1027/miniconda3/envs/drone/lib/python3.11/site-packages/pandas/core/indexes/base.py", line 6115, in _get_indexer_strict
+    self._raise_if_missing(keyarr, indexer, axis_name)
+  File "/home/seobin1027/miniconda3/envs/drone/lib/python3.11/site-packages/pandas/core/indexes/base.py", line 6179, in _raise_if_missing
+    raise KeyError(f"{not_found} not in index")
+KeyError: "['MTem'] not in index"
+
+
+File: ../0.data/results/XKR5_merged.csv
+Traceback (most recent call last):
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 380, in <module>
+    train_visualize(data_path=path)
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 356, in train_visualize
+    pipeline.load_prepare_data()
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 108, in load_prepare_data
+    feature_lst = self.feature_df.loc[self.feature_df["msg_field"] == self.msg_name, "feature_list"].values[0].split(", ")
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+IndexError: index 0 is out of bounds for axis 0 with size 0
+
+
+File: ../0.data/results/IMU_merged.csv
+Traceback (most recent call last):
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 382, in <module>
+    train_visualize(data_path=path)
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 356, in train_visualize
+    pipeline.load_prepare_data()
+  File "/home/seobin1027/tasks/new_log_data/drone-fclog-anomaly-detection/7.selected_features/tabnet_pipeline_selected.py", line 108, in load_prepare_data
+    feature_lst = self.feature_df.loc[self.feature_df["msg_field"] == self.msg_name, "feature_list"].values[0].split(", ")
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+IndexError: index 0 is out of bounds for axis 0 with size 0
+
+

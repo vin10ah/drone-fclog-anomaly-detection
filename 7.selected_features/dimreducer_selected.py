@@ -17,7 +17,7 @@ matplotlib.rcParams['font.family'] = 'NanumGothic'
 matplotlib.rcParams['axes.unicode_minus'] = False
 
 class DimReducer:
-    def __init__(self, filepath, label_col="label"):
+    def __init__(self, filepath, selected_path, label_col="label"):
         self.filepath = filepath
         self.label_col = label_col
         self.msg_field = os.path.basename(filepath).split("_")[0]
@@ -26,7 +26,7 @@ class DimReducer:
         self.features = None
 
         # 선정된 피처 목록 파일 불러오기
-        self.feature_df = pd.read_csv("../0.data/selected_features_20250529.csv")
+        self.feature_df = pd.read_csv(selected_path)
 
     def load(self):
         # 선정된 피처 리스트
@@ -148,10 +148,11 @@ class DimReducer:
 
 
 # 처리 대상 파일 목록
-feature_df = pd.read_csv('../0.data/selected_features_20250529.csv')
+selected_path = '../0.data/selected_features.csv'
+feature_df = pd.read_csv(selected_path)
 msg_lst = list(feature_df['msg_field'].values)
 
-# msg_lst = ["IMU"]
+msg_lst = ["MCU"]
 
 if __name__ == "__main__":
     
@@ -161,7 +162,7 @@ if __name__ == "__main__":
         path = f"../0.data/results/{msg_name}_merged.csv"
 
         try: 
-            dimreducer = DimReducer(path)
+            dimreducer = DimReducer(path, selected_path)
             dimreducer.run_all()
 
         except Exception as e:
