@@ -151,6 +151,8 @@ class DimReducer:
 feature_df = pd.read_csv('../0.data/selected_features_20250529.csv')
 msg_lst = list(feature_df['msg_field'].values)
 
+# msg_lst = ["IMU"]
+
 if __name__ == "__main__":
     
     paths = sorted(glob.glob("../data/results/*.csv"))

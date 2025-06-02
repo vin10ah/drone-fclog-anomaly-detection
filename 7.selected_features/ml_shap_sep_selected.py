@@ -140,6 +140,8 @@ os.makedirs(save_dir, exist_ok=True)
 feature_df = pd.read_csv('../0.data/selected_features_20250529.csv')
 msg_lst = list(feature_df['msg_field'].values)
 
+# msg_lst = ["IMU"]
+
 # 에러 로그 파일 경로
 error_log_path = os.path.join(save_dir, "error_log.txt")
 
