@@ -6,11 +6,11 @@ import numpy as np
 from torch.utils.data import Dataset
 
 class SAINTDataset(Dataset):
-    def __init__(self, csv_path, num_cols=None, cat_cols=None, label_col='label'):
+    def __init__(self, df, num_cols=None, cat_cols=None, label_col='label'):
         super().__init__()
         self.num_cols = num_cols
         self.cat_cols = cat_cols
-        self.org_df = pd.read_csv(csv_path)
+        self.org_df = df
         self.labels = self.org_df["label"].values.astype('float32')
         self.df = self.org_df.drop(columns=['timestamp', 'TimeUS', label_col], errors='ignore')
         

@@ -25,10 +25,15 @@ class SAINTModel(nn.Module):
         self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=2)
 
         # Classification head
-        self.classifier = nn.Linear(emb_dim, num_classes)
+        self.classifier = nn.Sequential(
+            nn.LayerNorm(emb_dim),
+            nn.Linear(emb_dim, emb_dim),
+            nn.ReLU(),
+            nn.Linear(emb_dim, 1)  # ⚠️ 이진 분류이므로 1개 출력
+        )
+
 
     def forward(self, x_cat=None, x_num=None):
-        batch_size = x_cat.size(0) if x_cat is not None else x_num.size(0)
         tokens = []
 
         if self.has_cat and x_cat is not None:
