@@ -31,9 +31,19 @@ class SAINTDataset(Dataset):
         return len(self.labels)
     
     def __getitem__(self, idx):
-        x_cat = torch.tensor(self.cat_data[idx], dtype=torch.long) if self.cat_data is not None else None
-        x_num = torch.tensor(self.num_data[idx], dtype=torch.float) if self.num_data is not None else None
-        y = torch.tensor(self.labels[idx], dtype=torch.long)
-    
+        # 범주형: 없으면 빈 텐서로 반환
+        if self.cat_data is not None:
+            x_cat = torch.tensor(self.cat_data[idx], dtype=torch.long)
+        else:
+            x_cat = torch.empty(0, dtype=torch.long)  # <-- 빈 텐서
+
+        # 수치형: 없으면 빈 텐서로 반환
+        if self.num_data is not None:
+            x_num = torch.tensor(self.num_data[idx], dtype=torch.float)
+        else:
+            x_num = torch.empty(0, dtype=torch.float)  # <-- 빈 텐서
+
+        y = torch.tensor(self.labels[idx], dtype=torch.float).unsqueeze(0)
+
         return x_cat, x_num, y
-    
+        
