@@ -26,6 +26,8 @@ msg_lst = list(selected_df["msg_field"])
 # msg_lst = sorted(glob.glob("../0.data/results/*.csv"))
 
 for msg in msg_lst:
+
+    os.makedirs("./results/model", exist_ok=True)
     
     selected_cols = selected_df.loc[selected_df['msg_field']==msg, 'feature_list'].values[0].split(', ')
     selected_cols.append('label')
