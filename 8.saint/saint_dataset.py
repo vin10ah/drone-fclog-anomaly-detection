@@ -15,7 +15,7 @@ class SAINTDataset(Dataset):
         self.df = self.org_df.drop(columns=['timestamp', 'TimeUS', label_col], errors='ignore')
         
 
-        # 범주형 데이터가 있는지 확인하고, 없을 때의 처리
+        # 범주형/연속형 데이터가 있는지 확인하고, 없을 때의 처리
         if len(self.cat_cols) > 0:
             self.cat_data = self.df[cat_cols].astype('category') \
                 .apply(lambda x: x.cat.codes).values.astype('int64')
