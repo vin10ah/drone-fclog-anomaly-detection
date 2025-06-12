@@ -8,6 +8,30 @@ import os
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
+
+
+class EarlyStopping:
+    def __init__(self, patience=10, verbose=False):
+        self.patience = patience
+        self.counter = 0
+        self.best_loss = float('inf')
+        self.early_stop = False
+        self.verbose = verbose
+
+    def step(self, val_loss):
+        if val_loss < self.best_loss:
+            self.best_loss = val_loss
+            self.counter = 0
+            if self.verbose:
+                print(f"Validation loss improved to {val_loss:.4f}")
+        else:
+            self.counter += 1
+            if self.verbose:
+                print(f"EarlyStopping counter: {self.counter}/{self.patience}")
+            if self.counter >= self.patience:
+                self.early_stop = True
+
+
 def sigmoid_preds(logits):
     probs = torch.sigmoid(logits)
     return (probs > 0.5).long()
@@ -48,6 +72,8 @@ def train_one_epoch(model, dataloader, optimizer, criterion, device):
     avg_loss = total_loss / len(dataloader.dataset)
     return avg_loss, metrics
 
+
+
 def validate(model, dataloader, criterion, device):
     model.eval()
     total_loss = 0
@@ -72,11 +98,15 @@ def validate(model, dataloader, criterion, device):
     avg_loss = total_loss / len(dataloader.dataset)
 
     
-    return avg_loss, metrics
+    return avg_loss, metrics, y_pred, y_true
 
 def train_valid(msg_field, model, optimizer, criterion, device, trn_loader, val_loader, epochs):
     best_val_loss = float('inf')
     os.makedirs("./results/model", exist_ok=True)
+    best_metrics = {}
+    best_epoch = 0
+
+    early_stopper = EarlyStopping(patience=10, verbose=True)
 
 
     for epoch in range(epochs):
@@ -89,6 +119,7 @@ def train_valid(msg_field, model, optimizer, criterion, device, trn_loader, val_
             best_metrics = val_metrics.copy()
             best_preds = preds
             best_labels = labels
+            best_epoch = epoch + 1
             
             torch.save(model.state_dict(), f"./results/model/{msg_field}_SAINT_best_model.pt")
             print(f"✅ Best model saved at epoch {epoch+1} (val_loss={val_loss:.4f})")
@@ -106,14 +137,21 @@ def train_valid(msg_field, model, optimizer, criterion, device, trn_loader, val_
             f"Recall: {val_metrics['recall']:.4f}, "
             f"Acc: {val_metrics['accuracy']:.4f}")
         
-        # 🔸 Save metrics to TXT
+        # Early stopping 체크
+        early_stopper.step(val_loss)
+        if early_stopper.early_stop:
+            print("Early stopping triggered.")
+            break
+        
+    # Save metrics to TXT
     os.makedirs("./results/metrics", exist_ok=True)
     with open(f"./results/metrics/{msg_field}_metrics.txt", "w") as f:
+        f.write(f"best_epoch: {best_epoch}\n")
         f.write(f"val_loss: {best_val_loss:.4f}\n")
         for k, v in best_metrics.items():
             f.write(f"{k}: {v:.4f}\n")
 
-    # 🔸 Save confusion matrix
+    # Save confusion matrix
     os.makedirs("./results/confusion_matrix", exist_ok=True)
     cm = confusion_matrix(best_labels, best_preds)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm)

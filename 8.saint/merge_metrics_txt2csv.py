@@ -25,7 +25,7 @@ def merge_metrics_txt_to_csv(metrics_dir, output_csv_path):
     df = pd.DataFrame(records)
     df.sort_values(by="msg_field", inplace=True)
     df.to_csv(output_csv_path, index=False)
-    print(f"✅ Saved summary CSV to: {output_csv_path}")
+    print(f"Saved summary CSV to: {output_csv_path}")
 
 
 if __name__ == "__main__":
