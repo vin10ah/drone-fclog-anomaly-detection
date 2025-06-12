@@ -46,8 +46,8 @@ for msg in msg_lst:
     # 추론시 동일한 스케일러 사용 가능
     joblib.dump(scaler, f"./results/model/{msg}_scaler.pkl")
 
-    trn_dataset = SAINTDataset(trn_df, num_cols=num_cols, cat_cols=None, label_col='label')
-    val_dataset = SAINTDataset(val_df, num_cols=num_cols, cat_cols=None, label_col='label')
+    trn_dataset = SAINTDataset(trn_df, num_cols=num_cols, cat_cols=[], label_col='label')
+    val_dataset = SAINTDataset(val_df, num_cols=num_cols, cat_cols=[], label_col='label')
     
     trn_loader = DataLoader(trn_dataset, batch_size=256, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=256)
