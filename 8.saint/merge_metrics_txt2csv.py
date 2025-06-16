@@ -30,5 +30,5 @@ def merge_metrics_txt_to_csv(metrics_dir, output_csv_path):
 
 if __name__ == "__main__":
     metrics_folder = "./results/metrics"
-    output_csv = "./results/SAINT_summary.csv"
+    output_csv = "./results/SAINT_summary_250613.csv"
     merge_metrics_txt_to_csv(metrics_folder, output_csv)

@@ -13,7 +13,7 @@ from sklearn.preprocessing import StandardScaler
 from saint_simple import SAINTModel
 from saint_dataset import SAINTDataset
 from train import *
-from saint_update import SAINT
+from saint import SAINT
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -60,5 +60,8 @@ for msg in msg_lst:
     model.to(device)
 
     train_valid(msg, model, optimizer, criterion, device, trn_loader, val_loader, epochs)
+    
+
+    break
 
 
