@@ -13,7 +13,7 @@ from sklearn.preprocessing import StandardScaler
 from saint_simple import SAINTModel
 from saint_dataset import SAINTDataset
 from train import *
-from saint_update import SAINT
+from saint_new_cfm import CompilerFriendlySAINT
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -54,7 +54,7 @@ for msg in msg_lst:
     val_loader = DataLoader(val_dataset, batch_size=256)
 
 
-    model = SAINT(num_categories=[], num_numericals=len(num_cols))
+    model = CompilerFriendlySAINT(num_categories=[], num_numericals=len(num_cols))
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     criterion = nn.BCEWithLogitsLoss()
     model.to(device)

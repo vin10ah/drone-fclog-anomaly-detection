@@ -11,6 +11,8 @@ import umap.umap_ as umap
 import warnings
 import math
 
+import config as cfg
+
 warnings.filterwarnings("ignore", category=UserWarning)
 
 matplotlib.rcParams['font.family'] = 'NanumGothic'
@@ -26,24 +28,27 @@ class DimReducer:
         self.features = None
 
         # 선정된 피처 목록 파일 불러오기
-        self.feature_df = pd.read_csv(selected_path)
+        self.selected_path = selected_path
+
 
     def load(self):
-        # 선정된 피처 리스트
-        feature_lst = self.feature_df.loc[self.feature_df["msg_field"] == self.msg_field, "feature_list"].values[0].split(", ")
-        feature_lst.append("label")
-
         df = pd.read_csv(self.filepath)
         df = df.drop(columns=["timestamp", "TimeUS"], errors="ignore")
         df = df.dropna(axis=1, how='all')
 
-        n_df = df[feature_lst]
-        print(n_df.columns)
+        # 선정된 피처 리스트
+        if self.selected_path:
+            feature_df = pd.read_csv(selected_path)
+            feature_lst = feature_df.loc[feature_df["msg_field"] == self.msg_field, "feature_list"].values[0].split(", ")
+            feature_lst.append("label")
+            df = df[feature_lst]
+        
+        print(df.columns)
 
-        self.df = n_df
-        self.y = n_df[self.label_col]
-        self.features = [col for col in n_df.columns if col != self.label_col]
-        self.n_samples = len(n_df)
+        self.df = df
+        self.y = df[self.label_col]
+        self.features = [col for col in df.columns if col != self.label_col]
+        self.n_samples = len(df)
 
     def _sample_and_scale(self, random_state=42, sample_size=3000):
         sample_size = min(sample_size, self.n_samples)
@@ -148,11 +153,14 @@ class DimReducer:
 
 
 # 처리 대상 파일 목록
-selected_path = '../0.data/selected_features_20250602.csv'
-feature_df = pd.read_csv(selected_path)
-msg_lst = list(feature_df['msg_field'].values)
 
-# msg_lst = ["MCU"]
+if cfg.selected_path:
+    selected_path = cfg.selected_path
+    feature_df = pd.read_csv(selected_path)
+    msg_lst = list(feature_df['msg_field'].values)
+else:
+    selected_path = cfg.selected_path
+    msg_lst = cfg.msg_lst
 
 if __name__ == "__main__":
     

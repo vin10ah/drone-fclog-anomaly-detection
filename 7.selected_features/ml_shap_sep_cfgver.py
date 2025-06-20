@@ -10,8 +10,12 @@ import matplotlib
 matplotlib.rcParams['font.family'] = 'DejaVu Sans'
 matplotlib.rcParams['font.sans-serif'] = ['DejaVu Sans']
 
-import config as cfg
-import joblib 
+class TimeoutException(Exception):
+    pass
+
+def timeout_handler(signum, frame):
+    raise TimeoutException("SHAP 계산 시간 초과")
+
 
 class SHAPPipeline:
     def __init__(self, data_path, msg_name, selected_path, save_dir=None,):
@@ -47,10 +51,6 @@ class SHAPPipeline:
             # 모델 이름 추출
             model_name = best_model.__class__.__name__
             print(f"✔ 선택된 모델: {model_name}")
-
-            # model_save_path = os.path.join(self.save_dir, 'best_model', f"{self.msg_name}_best_model.pkl")
-            # joblib.dump(best_model, model_save_path)
-            # print(f"   -> 모델 저장 완료: {model_save_path}")
 
             # 모델 성능 저장
             model_result = pull()
@@ -136,11 +136,11 @@ save_dir = "./results/ml_shap"
 os.makedirs(save_dir, exist_ok=True)
 
 # 처리 대상 파일 목록
-selected_path = '../0.data/selected_features.csv'
+selected_path = '../0.data/selected_features_20250602.csv'
 feature_df = pd.read_csv(selected_path)
-# msg_lst = list(feature_df['msg_field'].values)
+msg_lst = list(feature_df['msg_field'].values)
 
-msg_lst = ["MCU"]
+# msg_lst = ["MCU"]
 
 # 에러 로그 파일 경로
 error_log_path = os.path.join(save_dir, "error_log.txt")

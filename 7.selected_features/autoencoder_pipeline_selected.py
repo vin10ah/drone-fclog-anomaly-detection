@@ -260,17 +260,17 @@ import argparse
 
 def run(mode, params, msg_field): 
     set_seed(42)
-    # 데이터 불러오기 & concat 
+    # 데이터 불러오기
     feature_df = pd.read_csv('../0.data/results/selected_features_20250529.csv')
     df = pd.read_csv(f'../0.data/results/{msg_field}_merged.csv')
 
     select_col = feature_df.loc[df["msg_field"] == msg_field, "feature_list"].values[0].split(", ")
     select_col.append("label")
-    selected_df = df[select_col]
-    
+    n_df = df[select_col]
+    print(n_df.columns)
     # 정상과 이상 분리
-    nor_df = selected_df.loc[selected_df['label'] == 0]
-    ab_df = selected_df.loc[selected_df['label'] == 1]
+    nor_df = n_df.loc[n_df['label'] == 0]
+    ab_df = n_df.loc[n_df['label'] == 1]
 
     nor_trn, nor_tst = train_test_split(nor_df, test_size=0.2, random_state=42)
     nor_tst = nor_tst.drop(columns=['label'])

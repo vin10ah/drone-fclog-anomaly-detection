@@ -1,9 +1,12 @@
 # 결과물 제외
-results/
+# results 폴더들 무시
+results*/
+
 logs/
 *.log
 *.csv
 *.png
+*.zip
 
 # Python 관련
 __pycache__/
